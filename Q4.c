@@ -7,7 +7,7 @@
 
 #define MAX_MESSAGE_LENGTH 100
 
-char message[MAX_MESSAGE_LENGTH];
+char global_message[MAX_MESSAGE_LENGTH];
 sem_t sprod;
 sem_t scons;
 
@@ -24,15 +24,11 @@ void Consommer(char* message) {
 }
 
 void Deposer(char* message) {
-    // In a real-world scenario, this function would add the message to a shared buffer.
-    // Here we just copy the message to a global variable for simplicity.
-    strcpy(::message, message);
+    strcpy(global_message, message);
 }
 
 void Retirer(char* message) {
-    // In a real-world scenario, this function would remove the message from a shared buffer.
-    // Here we just copy the global variable to the message for simplicity.
-    strcpy(message, ::message);
+    strcpy(message, global_message);
 }
 
 void* Production(void* arg) {
@@ -60,19 +56,15 @@ void* Consommation(void* arg) {
 int main() {
     pthread_t prodThread, consThread;
 
-    // Initialize the semaphores
-    sem_init(&sprod, 0, 1);  // initially the producer is allowed to produce
-    sem_init(&scons, 0, 0);  // initially the consumer cannot consume
+    sem_init(&sprod, 0, 1); 
+    sem_init(&scons, 0, 0);
 
-    // Create the threads
     pthread_create(&prodThread, NULL, Production, NULL);
     pthread_create(&consThread, NULL, Consommation, NULL);
 
-    // Wait for the threads to finish
     pthread_join(prodThread, NULL);
     pthread_join(consThread, NULL);
 
-    // Clean up the semaphores
     sem_destroy(&sprod);
     sem_destroy(&scons);
 
