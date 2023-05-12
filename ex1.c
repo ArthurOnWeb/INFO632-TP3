@@ -23,7 +23,7 @@ void a(){
 void *p2(void *arg)
 {
     /* wait for signal from main thread */
-    sem_wait(&sync);
+    sem_wait(&synchro);
     b();
     return NULL;
 }
